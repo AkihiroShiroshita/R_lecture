@@ -6,32 +6,42 @@
 install.packages("usethis") #to creat readme file
 install.packages("rmarkdown")
 usethis::use_readme_rmd()
-###Data handling############
+###Data cleaning############
 getwd() #setwd("~/project")
+library(readxl)
+od1 <- read_excel("original_data.xlsx",
+                  sheet = "入契肺炎",
+                  skip = 2)
+str(od1)
 install.packages("tidyverse")
-library("tidyverse")
-df <- read_csv("../project/pneumocopd_analysis_complete.csv",
-               col_types = cols(.default = col_double()))
-install.packages("naniar")
-install.packages("visdat")
-library(naniar)
-library(visdat)
-vis_miss(df)
-miss_var_summary(df)
-###Summarizing data
-install.packages("tableone")
-library(tableone)
-#Baseline characterisrics
-factorVars <- c("gender", "steroid", "ics", "laba", "lama", "ams", "death")
-vars <- c("age", "steroid", "gender", "hospitalterm", "ics", "laba", "lama", "rr", "ams", "hr","death", "bun")
-table1 <- CreateTableOne(vars = vars, data = df, includeNA = TRUE, factorVars = factorVars)
-table1 %>% 
-  print(nonnormal = c("hospitalterm")) %>% write.csv(file = "table1.csv")
-#Baseline characteristics by treatment 
-table2 <- CreateTableOne(vars = c("age", "gender", "hospitalterm", "ics", "laba", "lama", "rr", "ams", "hr", "death"),
-                         strata = "steroid", factorVars = c("gender","ics", "laba", "lama", "ams", "death"), data = df)
-table2 %>% 
-  print(exact = "MMT",
-        nonnormal = c("hospitalterm"),
-        smd = TRUE) %>% 
-  write.csv(file = "table2.csv")
+install.packages("lubridate")
+library(tidyverse)
+library(lubridate)
+#Datacleaning: sheet1
+od1 <- od1 %>% 
+  rename(id = 患者番号,
+         age = 入院時年齢,
+         steroid = ステロイド使用,
+         intubation = 気管内挿管,
+         prognosis = 退院時転帰)
+od1 <- od1 %>% 
+  mutate(adl = apply(od1[,16:25], 1, sum),
+         hospitalterm = interval(original_data$退院年月日, original_data$入院年月日)) 
+od1 <- od1 %>% 
+  select(id, age, steroid, intubation, prognosis, adl) 
+#Datacleaning: sheet2
+od2 <- read_excel("original_data.xlsx",
+                  sheet = "バイタル",
+                  skip = 0)
+od2 <- od2 %>% 
+  rename(id = 患者番号,
+         bp = 血圧,
+         hr = 脈拍,
+         rr = 呼吸数)
+od2_sub <- str_split(od2$bp, "/", simplify=T) %>% 
+  as_tibble() %>% 
+  rename(sbp = V1,
+         dbp= V2)
+od2_2_sub <- bind_cols(od2, od2_sub) 
+#Connecting od1 and od3
+od13 <- inner_join(od1, od2_2_sub, by = "id")  

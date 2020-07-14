@@ -9,5 +9,5 @@
 
 R lectures 
 
-*_ Data handling 
-*_ Statistical analyses
+* Data handling/  
+* Statistical analyses/
