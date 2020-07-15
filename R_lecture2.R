@@ -2,6 +2,7 @@
 library(tidyverse)
 library(lubridate)
 df <- read_csv("../project/pneumocopd_analysis_complete.csv",
+               locale = locale(encoding = "CP932"),
                col_types = cols(.default = col_double()))
 install.packages("naniar")
 install.packages("visdat")
