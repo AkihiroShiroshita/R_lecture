@@ -82,7 +82,7 @@ od3_wide <- od3_wide %>%
   filter((starts==testday|starts==testday+1) & !bun == "ソクテイフノウ")  
 #long format
 #long <- od3_wide %>% gather(., key = "var", value = "number",
-#                            -id, -starts, -testday, -eo_ab)
+#                            bun)
 #connecting data: od12 and od3_wide 
 install.packages("tidylog")
 library(tidylog)
@@ -99,6 +99,7 @@ load("/cloud/project/after_cleaning.rda")
 ############################
 ###Advanced data cleaning###
 ############################
+##for Shiroshtia's study
 rp1 <- read_excel("original_data_relapse.xlsx", 
                   sheet = "入契肺炎")
 dim(rp1)
@@ -117,3 +118,15 @@ length(unique(rp1_grouped$id)) #Not use "rp1_grouped[id]".
 rp2 <- rp1_grouped %>% 
   mutate(tag = start - lag(end)) %>% 
   filter(tag <= 365)
+##manipulating strings and substrings
+su <- read_excel("original_summary.xlsx")
+su <- su %>% 
+  rename(id = 患者番号,
+         start = 入院年月日,
+         comment = 考察)
+which(str_detect(su$comment, "HOT"))
+su <- su %>% 
+  mutate(hot = str_detect(su$comment, "HOT"))
+str_subset(su$comment, "COPD.?")
+str_subset(su$comment, "^COPD.*")
+str_replace_all(su$comment, "COPD", "慢性閉塞性肺疾患")
