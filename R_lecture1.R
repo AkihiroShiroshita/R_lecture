@@ -1,5 +1,5 @@
 ###################
-###Lecture1########
+###Lecture 1#######
 ###Data handling###
 ###################
 ##Before we get started...
@@ -79,7 +79,8 @@ od3_wide <- od3 %>%
 od3_wide <- od3_wide %>% 
   arrange(id, testday) %>% 
   group_by(id, starts) %>% 
-  filter((starts==testday|starts==testday+1) & !bun == "ソクテイフノウ")  
+  filter((testday==starts|testday==starts+1) & (!bun == "ソクテイフノウ") & !is.na(bun)) %>% 
+  filter(row_number()==1)
 #long format
 #long <- od3_wide %>% gather(., key = "var", value = "number",
 #                            bun)
@@ -128,5 +129,6 @@ which(str_detect(su$comment, "HOT"))
 su <- su %>% 
   mutate(hot = str_detect(su$comment, "HOT"))
 str_subset(su$comment, "COPD.?")
-str_subset(su$comment, "^COPD.*")
+su <- su %>% 
+  mutate(o2 = str_extract(su$comment, "......酸素.........")) 
 str_replace_all(su$comment, "COPD", "慢性閉塞性肺疾患")
