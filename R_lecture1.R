@@ -120,6 +120,7 @@ rp2 <- rp1_grouped %>%
   mutate(tag = start - lag(end)) %>% 
   filter(tag <= 365)
 ##manipulating strings and substrings
+##regular expression
 su <- read_excel("original_summary.xlsx")
 su <- su %>% 
   rename(id = 患者番号,
@@ -131,4 +132,5 @@ su <- su %>%
 str_subset(su$comment, "COPD.?")
 su <- su %>% 
   mutate(o2 = str_extract(su$comment, "......酸素.........")) 
+str_detect(su$o2, "[1][0-5]") #\\d: 0-9
 str_replace_all(su$comment, "COPD", "慢性閉塞性肺疾患")
