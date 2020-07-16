@@ -5,6 +5,15 @@
 ###Read in the csv file
 library(tidyverse)
 library(lubridate)
+#Download removed packages from CRAN archieves
+url <- "https://cran.r-project.org/src/contrib/Archive/Nippon/Nippon_0.7.tar.gz"
+pkgFile <- "Nippon_0.7.tar.gz"
+download.file(url = url, destfile = pkgFile)
+install.packages(pkgs=pkgFile, type="source", repos=NULL)
+library(Nippon)
+as.numeric("２")
+as.numeric(zen2han("２"))
+#Read in the csv file
 df <- read_csv("stats_data.csv", 
                locale = locale(encoding = "SHIFT-JIS"), 
                col_types = cols(
@@ -37,8 +46,15 @@ df <- read_csv("stats_data.csv",
                ),
                guess_max = 1500, #default: 1000
                na = c("NA", "NULL", ".", "999", "#VALUE!", "MA", "ND", "NE"))
+#df <- read_csv("stats_data.csv",
+#               col_types=cols(.default="c"))
 #spec(df)
 #cols_condense(spec(df))
+#For binding datasets from different hospitals
+#df1 <- df1 %>% 
+#  mutate_all(.funs = ~{as.character(.)}) #can omit ".funs = "
+#mutate_at(.vars = vars(age, gender), .funs = ~{as.character(.)})
+#bind_rows(df1, df2)
 install.packages("naniar")
 install.packages("visdat")
 library(naniar)

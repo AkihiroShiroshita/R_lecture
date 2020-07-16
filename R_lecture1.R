@@ -10,7 +10,8 @@ usethis::use_readme_rmd()
 ###################
 ###Data cleaning###
 ###################
-getwd() #setwd("~/project")
+getwd() 
+setwd("/cloud/project")
 library(readxl)
 install.packages("tidyverse")
 install.packages("lubridate")
@@ -92,15 +93,32 @@ od4 <- left_join(od12, od3_wide, by=c("id", "starts"))
 od_plus <- anti_join(od3_wide, od12, by=c("id", "starts"))
 ##Saving data
 save(od1, od2_2_sub, od12, od3, od3_wide, od4, file = "after_cleaning.rda")
-od4 %>% write_csv(path="cleaned_original_data.csv")
 #Reload RDA files
 load("/cloud/project/after_cleaning.rda")
-#Connecting data
-
+#od4 %>% write_csv(path="cleaned_original_data.csv")
+#write_rds(df, "R_lecture_dataset/after_cleaning.rds", compress = "gz")
+#install.packages("openxlsx")
+##library(openxlsx)
+#write.xlsx(df, "after_cleaning.xlsx")
+###Connecting many data
+getwd()
+dir.create("R_lecture_dataset")
+dir.create("R_lecture_dataset/cleaned_datasets",
+           recursive = TRUE)
+setwd("/cloud/project/R_lecture_dataset/cleaned_datasets")
+filelist <- list.files("/cloud/project/R_lecture_dataset/cleaned_datasets",
+                       pattern = "\\csv$")
+final_df <- map_df(filelist, ~{
+  path <- file.path("/cloud/project/R_lecture_dataset/cleaned_datasets", .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+  df <- df %>% mutate_all(.funs = as.character)
+  })
+final_df <- final_df %>% 
+  rowid_to_column(., "ID") 
 ############################
 ###Advanced data cleaning###
 ############################
-##for Shiroshtia's study
+##For Shiroshtia's study
 rp1 <- read_excel("original_data_relapse.xlsx", 
                   sheet = "入契肺炎")
 dim(rp1)
@@ -132,5 +150,8 @@ su <- su %>%
 str_subset(su$comment, "COPD.?")
 su <- su %>% 
   mutate(o2 = str_extract(su$comment, "......酸素.........")) 
+str_view(su$o2, "(?<=投与)\\d+")
+str_view(su$o2, "\\d+(?=(L|l))")
 str_detect(su$o2, "[1][0-5]") #\\d: 0-9
 str_replace_all(su$comment, "COPD", "慢性閉塞性肺疾患")
+
