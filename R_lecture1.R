@@ -4,7 +4,7 @@
 ###################
 ##Before we get started...
 ##Connecting GitHub and Rstudio
-install.packages("usethis") #to creat readme file
+install.packages("usethis") #to creat a readme file
 install.packages("rmarkdown")
 usethis::use_readme_rmd()
 ###################
@@ -83,7 +83,8 @@ od3_wide <- od3_wide %>%
   filter((testday==starts|testday==starts+1) & (!bun == "ソクテイフノウ") & !is.na(bun)) %>% 
   filter(row_number()==1)
 #long format
-#long <- od3_wide %>% gather(., key = "var", value = "number",
+#long <- od3_wide %>% gather(., key = "var",
+#                            value = "number",
 #                            bun)
 #connecting data: od12 and od3_wide 
 install.packages("tidylog")
@@ -92,15 +93,15 @@ od4 <- left_join(od12, od3_wide, by=c("id", "starts"))
 #picking up the patients with no lab data
 od_plus <- anti_join(od3_wide, od12, by=c("id", "starts"))
 ##Saving data
-save(od1, od2_2_sub, od12, od3, od3_wide, od4, file = "after_cleaning.rda")
+save(od1, od2_2_sub, od12, od3, od3_wide, od4, file = "after_cleaning.rda", compress = "gz")
 #Reload RDA files
 load("/cloud/project/after_cleaning.rda")
 #od4 %>% write_csv(path="cleaned_original_data.csv")
 #write_rds(df, "R_lecture_dataset/after_cleaning.rds", compress = "gz")
 #install.packages("openxlsx")
-##library(openxlsx)
+#library(openxlsx)
 #write.xlsx(df, "after_cleaning.xlsx")
-###Connecting many data
+###Connecting many data in the same folder
 getwd()
 dir.create("R_lecture_dataset")
 dir.create("R_lecture_dataset/cleaned_datasets",
