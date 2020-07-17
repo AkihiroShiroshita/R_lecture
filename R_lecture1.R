@@ -138,8 +138,8 @@ length(unique(rp1_grouped$id)) #Not use "rp1_grouped[id]".
 rp2 <- rp1_grouped %>% 
   mutate(tag = start - lag(end)) %>% 
   filter(tag <= 365)
-##manipulating strings and substrings
-##regular expression
+##Manipulating strings and substrings
+##Regular expression
 su <- read_excel("original_summary.xlsx")
 su <- su %>% 
   rename(id = 患者番号,
