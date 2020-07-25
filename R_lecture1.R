@@ -1,4 +1,4 @@
-#####################
+###################
 ###Lecture 1#######
 ###Data handling###
 ###################
@@ -56,7 +56,7 @@ od2_sub <- str_split(od2$bp, "/", simplify=T) %>%
          dbp= V2)
 od2_2_sub <- bind_cols(od2, od2_sub) 
 #Connecting od1 and od2_sub
-od12 <- inner_join(od1, od2_2_sub, by = "id")
+od12 <- inner_join(od1, od2_2_sub, by = "id") #left_join #right_join #full_join
 ##Data cleaning: od3
 od3 <- read_excel("original_data3.xlsx")
 od3 %>% glimpse()
@@ -83,9 +83,9 @@ od3_wide <- od3_wide %>%
   filter((testday==starts|testday==starts+1) & (!bun == "ソクテイフノウ") & !is.na(bun)) %>% 
   filter(row_number()==1)
 #long format
-#long <- od3_wide %>% gather(., key = "var",
-#                            value = "number",
-#                            bun)
+long <- od3_wide %>% gather(., key = "var",
+                            value = "number",
+                            bun)
 #connecting data: od12 and od3_wide 
 install.packages("tidylog")
 library(tidylog)
@@ -100,7 +100,7 @@ load("/cloud/project/after_cleaning.rda")
 #write_rds(df, "R_lecture_dataset/after_cleaning.rds", compress = "gz")
 #install.packages("openxlsx")
 #library(openxlsx)
-#write.xlsx(df, "after_cleaning.xlsx")
+#write.xlsx(od4, "after_cleaning.xlsx")
 ###Connecting many data in the same folder
 getwd()
 dir.create("R_lecture_dataset")
@@ -140,7 +140,7 @@ rp2 <- rp1_grouped %>%
   filter(tag <= 365)
 ##Manipulating strings and substrings
 ##Regular expression
-su <- read_excel("original_summary.xlsx")
+su <- read_excel("/cloud/project/original_summary.xlsx")
 su <- su %>% 
   rename(id = 患者番号,
          start = 入院年月日,
